@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "alertmanager.config.name" .}}
+data:
+  alertmanager.yaml: |- 
+    {{- toYaml .Values.alertmanager.config.alertmanagerYaml | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "alertmanager.deployment.name" . }}
+spec:
+  replicas: {{ .Values.alertmanager.deployment.replicas}}
+  selector:
+    matchLabels:
+      {{- include "alertmanager.deployment.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "alertmanager.deployment.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: alertmanager
+          image: quay.io/prometheus/alertmanager:v0.23.0
+          {{- if .Values.alertmanager.deployment.args }}
+          args:
+            {{- toYaml .Values.alertmanager.deployment.args | nindent 12 }}
+          {{- end }}
+          {{- if .Values.alertmanager.deployment.env }}
+          env:
+            {{- toYaml .Values.alertmanager.deployment.env | nindent 12 }}
+          {{- end }}
+          resources:
+            limits:
+              memory: {{ .Values.alertmanager.deployment.resources.limits.memory | quote }}
+              cpu: {{ .Values.alertmanager.deployment.resources.limits.cpu | quote }}
+          {{- if .Values.alertmanager.deployment.volumeMounts }}
+          volumeMounts:
+            {{- toYaml .Values.alertmanager.deployment.volumeMounts | nindent 12 }}
+          {{- end }}
+      {{- if .Values.alertmanager.deployment.volumes }}
+      volumes:
+        {{- toYaml .Values.alertmanager.deployment.volumes | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "alertmanager.service.name" . }}
+spec:
+  selector:
+    {{- include "alertmanager.deployment.labels" . | nindent 4 }}
+  ports:
+    - name: {{ .Values.alertmanager.service.ports.name }}
+      port: {{ .Values.alertmanager.service.ports.port }}
+      targetPort: {{ .Values.alertmanager.service.ports.targetPort }}

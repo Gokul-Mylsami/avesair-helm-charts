@@ -1,0 +1,84 @@
+# Frontend configuration
+frontend:
+  replicaCount: 1
+  containerName: frontend
+  image:
+    repository: gokulmsfag/finaltask-frontend
+    tag: latest
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: "300m"
+      memory: "64Mi"
+    limits:
+      cpu: "500m"
+      memory: "128Mi"
+  env:
+    - name: BACKEND_API
+      valueFrom:
+        configMapKeyRef:
+          name: application-config
+          key: BACKEND_API
+  port: 80
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+    protocol: TCP
+
+# Alertmanager configuration
+alertmanager:
+  deployment: 
+    replicas: 1
+    containerName: alertmanager
+    image:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.23.0
+    args:
+        - "--config.file=/etc/alertmanager/config/alertmanager.yaml"
+        - "--storage.path=/data"
+    env:
+      - name: SLACK_URL
+        valueFrom:
+        secretKeyRef:
+          name: application-secrets
+          key: SLACK_URL
+    resources:
+      limits:
+        cpu: "100m"
+        memory: 128Mi
+    volumeMounts:
+      - name: config-volume
+        mountPath: /etc/alertmanager/config
+      - name: storage-volume
+        mountPath: /data
+    volumes:
+      - name: config-volume
+        configMap:
+          name: alertmanager-config
+      - name: storage-volume
+        emptyDir: {}
+
+  config:
+    alertmanagerYaml:
+      global:
+        resolve_timeout: 5m
+      route:
+        group_by: ['alertname']
+        group_wait: 10s
+        group_interval: 10s
+        repeat_interval: 1h
+        receiver: 'slack-notifications'
+      receivers:
+        - name: 'slack-notifications'
+          slack_configs:
+            - channel: '#prometheus-alerts'
+              api_url: 'https://hooks.slack.com/services/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'
+              send_resolved: true
+  
+  service: 
+    ports:
+      name: web
+      port: 9093
+      targetPort: 9093

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "frontend.deployment.name" . }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount}}
+  selector:
+    matchLabels:
+      {{- include "frontend.deployment.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "frontend.deployment.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.frontend.containerName}}
+          image: {{ .Values.frontend.image.repository}}:{{ .Values.frontend.image.tag}}
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy}}
+          resources:
+            requests:
+              memory: {{ .Values.frontend.resources.requests.memory | quote}}
+              cpu: {{ .Values.frontend.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.frontend.resources.limits.memory | quote}}
+              cpu: {{ .Values.frontend.resources.limits.cpu | quote}}
+          env: {{ toYaml .Values.frontend.env | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "frontend.service.name" . }}
+spec:
+  selector:
+    {{- include "frontend.deployment.labels" . | nindent 4 }}
+  type: {{ .Values.frontend.service.type }}
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.targetPort }}
+      protocol: {{ .Values.frontend.service.protocol }}

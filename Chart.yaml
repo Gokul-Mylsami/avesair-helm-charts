@@ -1,0 +1,6 @@
+apiVersion: v3
+appVersion: 1.16.0
+description: Helm chart for Avesair flight ticket booking application
+name: avesair
+type: application
+version: 0.0.1
