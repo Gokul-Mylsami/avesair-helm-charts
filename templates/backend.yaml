@@ -15,7 +15,7 @@ spec:
       containers:
         - name: {{ .Values.backend.containerName}}
           image: {{ .Values.backend.image.repository}}:{{ .Values.backend.image.tag}}
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy}}}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy}}
           resources:
             requests:
               memory: {{ .Values.backend.resources.requests.memory | quote }}
@@ -23,45 +23,15 @@ spec:
             limits:
               memory: {{ .Values.backend.resources.limits.memory | quote }}
               cpu: {{ .Values.backend.resources.limits.cpu | quote }}
+          {{- if .Values.backend.env }}
           env:
-            - name: PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: PORT
-            - name: NODE_ENV
-              valueFrom:
-                configMapKeyRef:
-                  name: application-config
-                  key: NODE_ENV
-            - name: MONGO_URL
-              valueFrom:
-                secretKeyRef:
-                  name: application-secrets
-                  key: MONGO_URL
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: application-secrets
-                  key: JWT_SECRET
-            - name: JWT_EXPIRES_IN
-              value: 1d
-            - name: EMAIL_SERVICE
-              value: gmail
-            - name: EMAIL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: application-secrets
-                  key: EMAIL_USERNAME
-            - name: EMAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: application-secrets
-                  key: EMAIL_PASSWORD
-            - name: FRONTEND_URL
-              value: frontend.gokulmylsami.me
+            {{- toYaml .Values.backend.env | nindent 12 }}
+          {{- end }}
+          {{- if .Values.backend.port }}
           ports:
-            - containerPort: 8000
+            {{- toYaml .Values.backend.port | nindent 12 }}
+          {{- end }}
+
 ---
 apiVersion: v1
 kind: Service

@@ -37,25 +37,63 @@ backend:
     tag: latest
     pullPolicy: Always
   resources:
-      requests:
-          memory: "256Mi"
-          cpu: "500m"
-      limits:
-          memory: "512Mi"
-          cpu: "1"
-
+    requests:
+      memory: 256Mi
+      cpu: 500m
+    limits:
+      memory: 512Mi
+      cpu: 1
+  env:
+    - name: PORT
+      valueFrom:
+        configMapKeyRef:
+          name: application-config
+          key: PORT
+    - name: NODE_ENV
+      valueFrom:
+        configMapKeyRef:
+          name: application-config
+          key: NODE_ENV
+    - name: MONGO_URL
+      valueFrom:
+        secretKeyRef:
+          name: application-secrets
+          key: MONGO_URL
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: application-secrets
+          key: JWT_SECRET
+    - name: JWT_EXPIRES_IN
+      value: 1d
+    - name: EMAIL_SERVICE
+      value: gmail
+    - name: EMAIL_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: application-secrets
+          key: EMAIL_USERNAME
+    - name: EMAIL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: application-secrets
+          key: EMAIL_PASSWORD
+    - name: FRONTEND_URL
+      value: frontend.gokulmylsami.me
+  port: 
+    - containerPort: 8000
 
 # Alertmanager configuration
 alertmanager:
-  deployment: 
+  deployment:
     replicas: 1
     containerName: alertmanager
     image:
       repository: quay.io/prometheus/alertmanager
       tag: v0.23.0
     args:
-        - "--config.file=/etc/alertmanager/config/alertmanager.yaml"
-        - "--storage.path=/data"
+      - "--config.file=/etc/alertmanager/config/alertmanager.yaml"
+      - "--storage.path=/data"
     env:
       - name: SLACK_URL
         valueFrom:
@@ -83,19 +121,19 @@ alertmanager:
       global:
         resolve_timeout: 5m
       route:
-        group_by: ['alertname']
+        group_by: ["alertname"]
         group_wait: 10s
         group_interval: 10s
         repeat_interval: 1h
-        receiver: 'slack-notifications'
+        receiver: "slack-notifications"
       receivers:
-        - name: 'slack-notifications'
+        - name: "slack-notifications"
           slack_configs:
-            - channel: '#prometheus-alerts'
-              api_url: 'https://hooks.slack.com/services/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'
+            - channel: "#prometheus-alerts"
+              api_url: "https://hooks.slack.com/services/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"
               send_resolved: true
-  
-  service: 
+
+  service:
     ports:
       name: web
       port: 9093
