@@ -27,6 +27,24 @@ frontend:
     targetPort: 80
     protocol: TCP
 
+# backend configuration
+
+backend:
+  replicas: 1
+  containerName: backend
+  image:
+    repository: gokulmsfag/finaltask-backend
+    tag: latest
+    pullPolicy: Always
+  resources:
+      requests:
+          memory: "256Mi"
+          cpu: "500m"
+      limits:
+          memory: "512Mi"
+          cpu: "1"
+
+
 # Alertmanager configuration
 alertmanager:
   deployment: 
@@ -82,3 +100,11 @@ alertmanager:
       name: web
       port: 9093
       targetPort: 9093
+
+configMap:
+  PORT: "8000"
+  NODE_ENV: production
+  JWT_EXPIRE: 1d
+  EMAIL_SERVICE: gmail
+  FRONTEND_URL: frontend-service.default
+  BACKEND_API: backend-service.default:8000
