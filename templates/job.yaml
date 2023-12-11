@@ -6,7 +6,7 @@ spec:
   completions: {{ .Values.mongoJob.completions }}
   template:
     metadata:
-      {{ include "mongo.job.name" . | nindent 6 }}
+      {{- include "mongo.job.name" . | nindent 6 }}
     spec:
       containers:
         - name: {{ .Values.mongoJob.containerName}}

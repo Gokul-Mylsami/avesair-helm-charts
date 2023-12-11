@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mongo.service.name" .}}
+spec:
+  selector:
+    {{- include "mongo.deployment.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.mongodb.service.type}}
+  clusterIP: {{ .Values.mongodb.service.clusterIP }}
+  ports:
+    {{ toYaml .Values.mongodb.service.ports | nindent 4 }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mongo.stateful.name" .}}
+spec:
+  selector:
+    matchLabels:
+      {{- include "mongo.deployment.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "mongo.service.name" .}}
+  replicas: {{ .Values.mongodb.replicas}}
+  template:
+    metadata:
+      labels:
+        {{- include "mongo.deployment.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.mongodb.containerName}}
+          image: {{ .Values.mongodb.image.repository}}:{{ .Values.mongodb.image.tag}}
+          args: {{ .Values.mongodb.args }}
+          {{- if .Values.mongodb.ports }}
+          ports: {{ toYaml .Values.mongodb.ports | nindent 10 }}
+          {{- end}}
+          {{- if .Values.mongodb.env }}
+          env: {{ toYaml .Values.mongodb.env | nindent 10 }}
+          {{- end}}
+          {{- if .Values.mongodb.envFrom }}
+          {{- end}}
+          volumeMounts:
+            {{- toYaml .Values.mongodb.volumeMounts | nindent 12 }}
+  volumeClaimTemplates:
+    {{- toYaml .Values.mongodb.volumeClaimTemplates | nindent 4}}

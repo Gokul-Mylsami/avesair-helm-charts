@@ -1,0 +1,31 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.pdb.backend.name }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "backend.deployment.labels" . | nindent 6}}
+  minAvailable: {{ .Values.pdb.backend.minAvailable }}
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.pdb.frontend.name }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "frontend.deployment.labels" . | nindent 6}}
+  minAvailable: {{ .Values.pdb.frontend.minAvailable}}
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.pdb.mongo.name }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "mongo.deployment.selectorLabels" . | nindent 6}}
+  minAvailable: {{ .Values.pdb.mongo.minAvailable}}

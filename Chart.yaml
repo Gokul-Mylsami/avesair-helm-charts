@@ -4,3 +4,7 @@ description: Helm chart for Avesair flight ticket booking application
 name: avesair
 type: application
 version: 0.0.1
+dependencies:
+  - name: external-secrets
+    repository: https://charts.external-secrets.io
+    version: 0.9.9

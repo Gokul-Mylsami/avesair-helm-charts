@@ -213,3 +213,276 @@ stressJob:
     pullPolicy: Always
   command: ["node","tester.js"]
   restartPolicy: Never
+
+kubeStateMetrics:
+  name: kube-state-metrics
+  clusterRole:
+    rules:
+      - apiGroups: ["*"]
+        resources: ["*"]
+        verbs: ["list","watch"]
+
+  clusterRoleBinding:
+    subjects:
+      - kind: ServiceAccount
+        name: kube-state-metrics
+        namespace: default
+    roleRef:
+      kind: ClusterRole
+      name: kube-state-metrics
+      apiGroup: rbac.authorization.k8s.io
+  
+  deployment: 
+    replicas: 1
+    containerName: kube-state-metrics
+    image:
+      repository: quay.io/coreos/kube-state-metrics
+      tag: latest
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    ports:
+      - containerPort: 8080
+
+  service:
+    type: ClusterIP
+    ports: 
+      - port: 8080
+        targetPort: 8080
+        protocol: TCP
+
+mongodb: 
+  replicas: 3
+  containerName: mongodb
+  image: 
+    repository: mongo
+    tag: 4.0.8
+  args: ["--replSet", "rs0", "--bind_ip_all"]
+  ports:
+    - name: mongodb
+      containerPort: 27017
+  volumeMounts:
+    - name: data
+      mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteMany"]
+        storageClassName: aws-efs-sc
+        resources:
+          requests:
+            storage: 1Gi  
+  service:
+    type: ClusterIP
+    clusterIP: None
+    ports: 
+      - port: 27017
+        targetPort: 27017
+        protocol: TCP
+        name: mongo-db
+
+networkPolicy:
+  policyTypeForBackend: 
+    - Ingress
+
+nodeExporter:
+  namespace: monitoring
+  hostNetwork: true
+  containerName: prometheus-node-exporter
+  image: 
+    repository: quay.io/prometheus/node-exporter
+    tag: v1.2.2
+  ports:
+    - name: http
+      containerPort: 9100
+  resources:
+    limits:
+      memory: "128Mi"
+
+  service: 
+    type: NodePort
+    ports:
+      - name: http
+        port: 9100
+        targetPort: 9100
+        nodePort: 30910
+
+  clusterRole:
+    rules: 
+      - apiGroups: [""]
+        resources: ["nodes","pods"]
+        verbs: ["get","list","watch"]
+
+  clusterRoleBinding:
+    subjects:
+      - kind: ServiceAccount
+        name: prometheus-node-exporter
+        namespace: monitoring
+    roleRef: 
+      kind: ClusterRole
+      name: node-exporter
+      apiGroup: rbac.authorization.k8s.io
+
+pdb:
+  backend: 
+    name: backend-pdb
+    minAvailable: 2
+  frontend:
+    name: frontend-pdb
+    minAvailable: 1
+  mongo:
+    name: mongo-pdb
+    minAvailable: 1
+
+prometheus:
+  replicas: 1
+  containerName: prometheus
+  image:
+    repository: prom/prometheus
+    tag: latest
+  args:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+  ports:
+    - containerPort: 9090
+  resources:
+    limits: 
+      memory: "128Mi"
+      cpu: "250m"
+  volumes: 
+    prometheusConfigName: prometheus-config
+    mountPath: /etc/prometheus
+
+  service: 
+    type: ClusterIP
+    ports:
+      - port: 9090
+        targetPort: 9090
+        protocol: TCP   
+  configMap:
+    prometheus: 
+      global:
+        scrape_interval: 15s
+      alerting:
+        alertmanagers:
+          - static_configs:
+              - targets:
+                  - alertmanager:9093
+      rule_files:
+        - alert.rules.yml
+
+      scrape_configs:
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['localhost:9090']
+        - job_name: 'backend'
+          static_configs:
+            - targets: ['backend-service.default:8000']
+        - job_name: 'kubernetes-state-metrics'
+          static_configs:
+            - targets: ['kube-state-metrics.default:8080']
+        - job_name: 'ec2-instances'
+          ec2_sd_configs:
+            - region: 'us-east-1'
+          relabel_configs:
+            - source_labels: [__meta_ec2_public_ip]
+              target_label: __address__
+              replacement: '${1}:30910'
+
+    alertRules: 
+      groups:
+        - name: alert.rules
+          rules:
+            - alert: BackendDown
+              expr: up{job="backend"} == 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Backend is down"
+                description: "Backend is down for more than 1 minute"
+            - alert: HighLatency
+              expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="backend"}[5m])) by (le)) > 0.5
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High latency"
+                description: "High latency for more than 1 minute"
+            - alert: HighThroughput
+              expr: sum(rate(http_request_duration_seconds_count{job="backend"}[5m])) by (le) > 100
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High throughput"
+                description: "High throughput for more than 1 minute"
+            - alert: HighErrorRate
+              expr: sum(rate(http_request_duration_seconds_count{job="backend", status=~"5.."}[5m])) by (le) / sum(rate(http_request_duration_seconds_count{job="backend"}[5m])) by (le) > 0.01
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High error rate"
+                description: "High error rate for more than 1 minute"
+            - alert: HighCPUUsage
+              expr: sum(rate(container_cpu_usage_seconds_total{namespace="default", container="backend"}[5m])) by (pod_name) / sum(container_spec_cpu_quota{namespace="default", container="backend"}) by (pod_name) * 100 > 80
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High CPU usage"
+                description: "High CPU usage for more than 1 minute"
+            - alert: HighMemoryUsage
+              expr: sum(container_memory_usage_bytes{namespace="default", container="backend"}) by (pod_name) / sum(container_spec_memory_limit_bytes{namespace="default", container="backend"}) by (pod_name) * 100 > 80
+              for: 1m
+
+pv: 
+  efsId1: fs-0b160979a18957eec
+  efsId2: fs-0fc3deefe7670967a
+  efsId3: fs-06f24b7d93b73a626
+  volumeMode: Filesystem
+  capacity: 
+    storage: 2Gi
+  accessModes:
+    - "ReadWriteMany"
+  csi:
+    driver: efs.csi.aws.com
+
+secretStore:
+  namespace: default
+
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-east-1
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: external-secrets-irsa
+
+externalSecret: 
+  refreshInterval: 10m
+  secretStoreKind: SecretStore
+  data: 
+    - secretKey: MONGO_URL
+      remoteRef:
+        key: eksSecretKeys
+        property: MONGO_URL
+    - secretKey: JWT_SECRET
+      remoteRef:
+        key: eksSecretKeys
+        property: JWT_SECRET
+    - secretKey: EMAIL_USERNAME
+      remoteRef:
+        key: eksSecretKeys
+        property: EMAIL_USERNAME
+    - secretKey: EMAIL_PASSWORD
+      remoteRef:
+        key: eksSecretKeys
+        property: EMAIL_PASSWORD
+    - secretKey: SLACK_URL
+      remoteRef:
+        key: eksSecretKeys
+        property: SLACK_URL

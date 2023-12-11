@@ -24,6 +24,19 @@ app: {{- printf " backend" -}}
 {{- printf "backend-service" -}}
 {{- end }}
 
+# mongo db
+{{- define "mongo.stateful.name" -}}
+{{- printf "%s-mongodb" .Release.Name }}
+{{- end }}
+
+{{- define "mongo.deployment.selectorLabels" -}}
+app: {{ printf "mongodb" }}
+{{- end}}
+
+{{- define "mongo.service.name" }}
+{{- printf "mongodb-service"}}
+{{- end}}
+
 # Alertmanager
 {{- define "alertmanager.config.name" -}}
 {{- printf "%s-alertmanager-config" .Release.Name }}
@@ -127,4 +140,60 @@ name: {{ printf "mongodb-replica-set-config" }}
 
 {{- define "stress.job.name" -}}
 name: {{ printf "stress-job" }}
+{{- end}}
+
+{{- define "kube.state.metrics.name" -}}
+{{ printf "%s" .Values.kubeStateMetrics.name }}
+{{- end}}
+
+{{- define "kube.state.metrics.service.name" -}}
+{{ printf "kube-state-metrics-service"}}
+{{- end}}
+
+{{- define "kube.state.metrics.selectorLabels" -}}
+k8s-app: {{ printf "kube-state-metrics" }}
+{{- end}}
+
+{{- define "network.policy.name" -}}
+{{ printf "database-access"}}
+{{- end}}
+
+{{- define "node.exporter.name" -}}
+{{ printf "prometheus-node-exporter" }}
+{{- end}}
+
+{{- define "node.exporter.selectorLabels" -}}
+k8s-app: {{ printf "prometheus-node-exporter"}}
+{{- end}}
+
+{{- define "prometheus.deployment.name" -}}
+{{ printf "prometheus" }}
+{{- end}}
+
+{{- define "prometheus.deployment.selectorLabel" -}}
+app: {{ printf "prometheus" }}
+{{- end}}
+
+{{- define "mongo.pv.name1" -}}
+{{ printf "mongo-pv-1" }}
+{{- end}}
+
+{{- define "mongo.pv.name2" -}}
+{{ printf "mongo-pv-2" }}
+{{- end}}
+
+{{- define "mongo.pv.name3" -}}
+{{ printf "mongo-pv-3" }}
+{{- end}}
+
+{{- define "secret.store.name" -}}
+{{ printf "eks-secret-store" }}
+{{- end}}
+
+{{- define "external.secret.name" -}}
+{{ printf "eks-external-secret" }}
+{{- end}}
+
+{{- define "external.secret.secret.name" -}}
+{{ printf "application-secret"}}
 {{- end}}

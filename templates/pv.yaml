@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "mongo.pv.name1" .}}
+spec:
+  capacity:
+    storage: {{ .Values.pv.capacity.storage }}
+  volumeMode: {{ .Values.pv.volumeMode}}
+  accessModes:
+    {{ toYaml .Values.pv.accessModes | nindent 4}}
+  storageClassName: {{ include "storageclass.name" .}}
+  csi:
+    driver: {{ .Values.pv.csi.driver}}
+    volumeHandle: {{ .Values.pv.efsId1 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "mongo.pv.name2" .}}
+spec:
+  capacity:
+    storage: {{ .Values.pv.capacity.storage }}
+  volumeMode: {{ .Values.pv.volumeMode}}
+  accessModes:
+    {{ toYaml .Values.pv.accessModes | nindent 4}}
+  storageClassName: {{ include "storageclass.name" .}}
+  csi:
+    driver: {{ .Values.pv.csi.driver}}
+    volumeHandle: {{ .Values.pv.efsId2 }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "mongo.pv.name3" .}}
+spec:
+  capacity:
+    storage: {{ .Values.pv.capacity.storage }}
+  volumeMode: {{ .Values.pv.volumeMode}}
+  accessModes:
+    {{ toYaml .Values.pv.accessModes | nindent 4}}
+  storageClassName: {{ include "storageclass.name" .}}
+  csi:
+    driver: {{ .Values.pv.csi.driver}}
+    volumeHandle: {{ .Values.pv.efsId3}}
