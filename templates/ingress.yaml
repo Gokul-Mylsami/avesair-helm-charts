@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ingress.name" . }}
+  annotations:
+    {{- include "ingress.annotations" . | nindent 4 }}
+spec:
+  rules:
+    {{- include "ingress.rules" . | nindent 4}}

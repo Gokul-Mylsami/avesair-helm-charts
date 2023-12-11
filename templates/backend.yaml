@@ -36,12 +36,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: {{ include "backend.service.name" . }}
 spec:
   selector:
-    app: backend
-  type: ClusterIP
+    {{ include "backend.deployment.labels" . | nindent 4 }}
+  type: {{ .Values.backend.service.type}}
   ports:
-    - port: 8000
-      targetPort: 8000
-      protocol: TCP
+    - port: {{ .Values.backend.service.port}}
+      targetPort: {{ .Values.backend.service.targetPort}}
+      protocol: {{ .Values.backend.service.protocol}}

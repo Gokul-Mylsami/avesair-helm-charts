@@ -82,6 +82,12 @@ backend:
       value: frontend.gokulmylsami.me
   port: 
     - containerPort: 8000
+  
+  service: 
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
 
 # Alertmanager configuration
 alertmanager:
@@ -139,6 +145,54 @@ alertmanager:
       port: 9093
       targetPort: 9093
 
+# grafana
+grafana:
+  replica: 1
+  containerName: grafana
+  image:
+    repository: grafana/grafana
+    tag: latest
+    pullPolicy: Always
+  resources:
+    limits:
+      memory: 128Mi
+      cpu: 100m
+  ports: 
+    - containerPort: 3000
+  
+  service: 
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+
+hpa: 
+  minReplicas: 1
+  maxReplicas: 4
+  metrics: 
+    name: cpu
+    target: 
+      averageUtilization: 70
+      type: Utilization
+    type: Resource
+  scaleTargetRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-deployment
+
+mongoJob:
+  completions: 1
+  containerName: mongodb-replica-set-config
+  image:
+    repository: gokulmsfag/mongo-job
+    tag: latest
+    pullPolicy: Always
+  command: 
+    - "/bin/sh"
+    - "-c"
+    - "./script.sh mongodb-0.mongodb-service.default.svc.cluster.local mongodb-1.mongodb-service.default.svc.cluster.local mongodb-2.mongodb-service.default.svc.cluster.local"
+  restartPolicy: Never
+
 configMap:
   PORT: "8000"
   NODE_ENV: production
@@ -146,3 +200,16 @@ configMap:
   EMAIL_SERVICE: gmail
   FRONTEND_URL: frontend-service.default
   BACKEND_API: backend-service.default:8000
+
+storageClass:
+  provisioner: efs.csi.aws.com
+
+stressJob:
+  completions: 1
+  containerName: stress-job
+  image: 
+    repository: gokulmsfag/testing-job
+    tag: 1
+    pullPolicy: Always
+  command: ["node","tester.js"]
+  restartPolicy: Never

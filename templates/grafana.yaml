@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "grafana.deployment.name" . }}
+spec:
+  replicas: {{ .Values.grafana.replica }}
+  selector:
+    matchLabels:
+      {{-  include "grafana.deployment.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{-  include "grafana.deployment.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.grafana.containerName}}
+          image: {{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}
+          resources:
+            limits:
+              memory: {{ .Values.grafana.resources.limits.memory | quote}}
+              cpu: {{ .Values.grafana.resources.limits.cpu | quote}}
+          {{- if .Values.grafana.ports }}
+          ports:
+            {{- toYaml .Values.grafana.ports | nindent 12 }}
+          {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "grafana.service.name" . }}
+spec:
+  selector:
+    {{- include "grafana.deployment.labels" . | nindent 4 }}
+  type: {{ .Values.grafana.service.type}}
+  ports:
+    - port: {{ .Values.grafana.service.port }}
+      targetPort: {{ .Values.grafana.service.targetPort }}
