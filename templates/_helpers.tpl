@@ -39,7 +39,7 @@ app: {{ printf "mongodb" }}
 
 # Alertmanager
 {{- define "alertmanager.config.name" -}}
-{{- printf "%s-alertmanager-config" .Release.Name }}
+{{- printf "alertmanager-config" }}
 {{- end -}}
 
 {{- define "alertmanager.deployment.name" -}}
@@ -195,5 +195,5 @@ app: {{ printf "prometheus" }}
 {{- end}}
 
 {{- define "external.secret.secret.name" -}}
-{{ printf "application-secret"}}
+{{ printf "application-secrets"}}
 {{- end}}

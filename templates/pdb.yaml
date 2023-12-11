@@ -27,5 +27,5 @@ metadata:
 spec:
   selector:
     matchLabels:
-      {{ include "mongo.deployment.selectorLabels" . | nindent 6}}
+      {{- include "mongo.deployment.selectorLabels" . | nindent 6}}
   minAvailable: {{ .Values.pdb.mongo.minAvailable}}

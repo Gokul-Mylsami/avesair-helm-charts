@@ -1,4 +1,8 @@
 # Frontend configuration
+
+external-secrets:
+  enabled: true
+
 frontend:
   replicaCount: 1
   containerName: frontend
@@ -258,7 +262,10 @@ mongodb:
   image: 
     repository: mongo
     tag: 4.0.8
-  args: ["--replSet", "rs0", "--bind_ip_all"]
+  args: 
+    - "--replSet"
+    - "rs0"
+    - --bind_ip_all
   ports:
     - name: mongodb
       containerPort: 27017
@@ -451,7 +458,7 @@ pv:
     driver: efs.csi.aws.com
 
 secretStore:
-  namespace: default
+  namespace: external-secrets
 
   provider:
     aws:

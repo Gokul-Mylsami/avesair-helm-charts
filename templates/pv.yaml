@@ -7,7 +7,7 @@ spec:
     storage: {{ .Values.pv.capacity.storage }}
   volumeMode: {{ .Values.pv.volumeMode}}
   accessModes:
-    {{ toYaml .Values.pv.accessModes | nindent 4}}
+    {{- toYaml .Values.pv.accessModes | nindent 4}}
   storageClassName: {{ include "storageclass.name" .}}
   csi:
     driver: {{ .Values.pv.csi.driver}}
@@ -23,7 +23,7 @@ spec:
     storage: {{ .Values.pv.capacity.storage }}
   volumeMode: {{ .Values.pv.volumeMode}}
   accessModes:
-    {{ toYaml .Values.pv.accessModes | nindent 4}}
+    {{- toYaml .Values.pv.accessModes | nindent 4}}
   storageClassName: {{ include "storageclass.name" .}}
   csi:
     driver: {{ .Values.pv.csi.driver}}
@@ -38,7 +38,7 @@ spec:
     storage: {{ .Values.pv.capacity.storage }}
   volumeMode: {{ .Values.pv.volumeMode}}
   accessModes:
-    {{ toYaml .Values.pv.accessModes | nindent 4}}
+    {{- toYaml .Values.pv.accessModes | nindent 4}}
   storageClassName: {{ include "storageclass.name" .}}
   csi:
     driver: {{ .Values.pv.csi.driver}}

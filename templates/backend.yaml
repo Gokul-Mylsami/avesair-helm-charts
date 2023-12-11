@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "backend.deployment.labels" . | nindent 6 }}
+        {{- include "backend.deployment.labels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.backend.containerName}}

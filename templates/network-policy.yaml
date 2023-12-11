@@ -10,6 +10,6 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              {{ include "backend.deployment.labels" . | indent 8 }}
+              {{ include "backend.deployment.labels" . | nindent 14 }}
   policyTypes:
-    {{ toYaml .Values.networkPolicy.policyTypeForBackend | nindent 4}}
+    {{- toYaml .Values.networkPolicy.policyTypeForBackend | nindent 4}}

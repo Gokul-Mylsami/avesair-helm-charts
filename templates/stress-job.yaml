@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  {{ include "stress.job.name" . | nindent 2 }}
+  {{- include "stress.job.name" . | nindent 2 }}
 spec:
   completions: {{ .Values.stressJob.completions }}
   template:
     metadata:
-      {{ include "stress.job.name" . | nindent 8 }}
+      {{- include "stress.job.name" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Values.stressJob.containerName }}

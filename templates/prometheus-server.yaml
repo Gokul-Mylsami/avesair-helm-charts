@@ -4,10 +4,10 @@ metadata:
   name: {{ include "prometheus.deployment.name" . }}
 data:
   prometheus.yml: |
-    {{ toYaml .Values.prometheus.configMap.prometheus | nindent 4 }}
+    {{- toYaml .Values.prometheus.configMap.prometheus | nindent 4 }}
   
   alert.rules.yml: |
-    {{ toYaml .Values.prometheus.configMap.alertRules | nindent 4 }}
+    {{- toYaml .Values.prometheus.configMap.alertRules | nindent 4 }}
 
 ---
 apiVersion: apps/v1
@@ -28,11 +28,11 @@ spec:
         - name: {{ .Values.prometheus.containerName}}
           image: {{ .Values.prometheus.image.repository}}:{{ .Values.prometheus.image.tag}}
           args:
-            {{ toYaml .Values.prometheus.args | nindent 12 }}
+            {{- toYaml .Values.prometheus.args | nindent 12 }}
           ports:
-            {{ toYaml .Values.prometheus.ports | nindent 12}}
+            {{- toYaml .Values.prometheus.ports | nindent 12}}
           resources:
-            {{ toYaml .Values.prometheus.resources | nindent 12}}
+            {{- toYaml .Values.prometheus.resources | nindent 12}}
           volumeMounts:
             - name: {{ .Values.prometheus.volumes.prometheusConfigName }}
               mountPath: {{ .Values.prometheus.volumes.mountPath }}
@@ -48,7 +48,7 @@ metadata:
   name: {{ include "prometheus.deployment.name" . }}
 spec:
   selector:
-    {{ include "prometheus.deployment.selectorLabel" . | nindent 4}}
+    {{- include "prometheus.deployment.selectorLabel" . | nindent 4}}
   ports:
-    {{ toYaml .Values.prometheus.service.ports | nindent 4}}
+    {{- toYaml .Values.prometheus.service.ports | nindent 4}}
   type: {{ .Values.prometheus.service.type }}

@@ -10,7 +10,7 @@ kind: ClusterRole
 metadata:
   name: {{ include "node.exporter.name" . }}
 rules:
-  {{ toYaml .Values.nodeExporter.clusterRole.rules | nindent 2}}
+  {{- toYaml .Values.nodeExporter.clusterRole.rules | nindent 2}}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -18,9 +18,9 @@ kind: ClusterRoleBinding
 metadata:
   name: {{ include "node.exporter.name" . }}
 subjects:
-  {{ toYaml .Values.nodeExporter.clusterRoleBinding.subjects | nindent 2}}
+  {{- toYaml .Values.nodeExporter.clusterRoleBinding.subjects | nindent 2}}
 roleRef:
-  {{ toYaml .Values.nodeExporter.clusterRoleBinding.roleRef | nindent 2}}
+  {{- toYaml .Values.nodeExporter.clusterRoleBinding.roleRef | nindent 2}}
 
 ---
 apiVersion: apps/v1
@@ -29,15 +29,15 @@ metadata:
   name: {{ include "node.exporter.name" . }}
   namespace: {{ .Values.nodeExporter.namespace}}
   labels:
-    {{ include "node.exporter.selectorLabels" . | nindent 4}}
+    {{- include "node.exporter.selectorLabels" . | nindent 4}}
 spec:
   selector:
     matchLabels:
-      {{ include "node.exporter.selectorLabels" . | nindent 6}}
+      {{- include "node.exporter.selectorLabels" . | nindent 6}}
   template:
     metadata:
       labels:
-        {{ include "node.exporter.selectorLabels" . | nindent 8}}
+        {{- include "node.exporter.selectorLabels" . | nindent 8}}
     spec:
       serviceAccountName: {{ include "node.exporter.name" . }}
       hostNetwork: {{ .Values.nodeExporter.hostNetwork}}
@@ -45,9 +45,9 @@ spec:
         - name: prometheus-node-exporter
           image: {{ .Values.nodeExporter.image.repository}}:{{ .Values.nodeExporter.image.tag }}
           ports:
-            {{ toYaml .Values.nodeExporter.ports | nindent 12 }}
+            {{- toYaml .Values.nodeExporter.ports | nindent 12 }}
           resources:
-            {{ toYaml .Values.nodeExporter.resources | nindent 12 }}
+            {{- toYaml .Values.nodeExporter.resources | nindent 12 }}
 ---
 apiVersion: v1
 kind: Service
@@ -56,7 +56,7 @@ metadata:
   namespace: {{ .Values.nodeExporter.namespace }}
 spec:
   selector:
-    {{ include "node.exporter.selectorLabels" . | nindent 6}}
+    {{- include "node.exporter.selectorLabels" . | nindent 6}}
   type: {{ .Values.nodeExporter.service.type }}
   ports:
-    {{ toYaml .Values.nodeExporter.service.ports | nindent 4 }}
+    {{- toYaml .Values.nodeExporter.service.ports | nindent 4 }}
