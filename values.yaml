@@ -498,3 +498,6 @@ externalSecret:
       remoteRef:
         key: eksSecretKeys
         property: SLACK_URL
+
+argocd:
+  namespace: argocd
