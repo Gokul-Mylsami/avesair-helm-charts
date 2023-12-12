@@ -185,6 +185,7 @@ hpa:
     name: backend-deployment
 
 mongoJob:
+  activeDeadlineSeconds: 90
   completions: 1
   containerName: mongodb-replica-set-config
   image:

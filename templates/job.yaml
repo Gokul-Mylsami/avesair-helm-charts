@@ -3,6 +3,7 @@ kind: Job
 metadata:
   {{- include "mongo.job.name" . | nindent 2 }}
 spec:
+  activeDeadlineSeconds: {{ .Values.mongoJob.activeDeadlineSeconds }}
   completions: {{ .Values.mongoJob.completions }}
   template:
     metadata:
