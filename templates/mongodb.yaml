@@ -29,7 +29,8 @@ spec:
       containers:
         - name: {{ .Values.mongodb.containerName}}
           image: {{ .Values.mongodb.image.repository}}:{{ .Values.mongodb.image.tag}}
-          args: {{ .Values.mongodb.args }}
+          args: 
+            {{- toYaml .Values.mongodb.args | nindent 12 }}
           {{- if .Values.mongodb.ports }}
           ports: {{ toYaml .Values.mongodb.ports | nindent 10 }}
           {{- end}}

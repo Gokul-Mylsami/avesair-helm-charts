@@ -6,4 +6,4 @@ metadata:
     {{- include "ingress.annotations" . | nindent 4 }}
 spec:
   rules:
-    {{- include "ingress.rules" . | nindent 4}}
+    {{- include "ingress.rules" . | nindent 4 }}

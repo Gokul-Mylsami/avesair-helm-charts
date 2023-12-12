@@ -217,6 +217,10 @@ stressJob:
     pullPolicy: Always
   command: ["node","tester.js"]
   restartPolicy: Never
+  initContainers:
+    name: wait-for-backend
+    image: busybox
+    command: ['sh', '-c', 'until nslookup backend-service.default; do echo waiting for backend; sleep 5; done;']
 
 kubeStateMetrics:
   name: kube-state-metrics
@@ -362,6 +366,7 @@ prometheus:
     mountPath: /etc/prometheus
 
   service: 
+    port: 9090
     type: ClusterIP
     ports:
       - port: 9090
@@ -410,7 +415,7 @@ prometheus:
                 summary: "Backend is down"
                 description: "Backend is down for more than 1 minute"
             - alert: HighLatency
-              expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="backend"}[5m])) by (le)) > 0.5
+              expr: histogram_quantile(0.95, sum(rate(http_request_duration_bucket{job="backend"}[5m])) by (le)) > 0.5
               for: 1m
               labels:
                 severity: warning
@@ -418,7 +423,7 @@ prometheus:
                 summary: "High latency"
                 description: "High latency for more than 1 minute"
             - alert: HighThroughput
-              expr: sum(rate(http_request_duration_seconds_count{job="backend"}[5m])) by (le) > 100
+              expr: sum(rate(http_request_duration_count{job="backend"}[5m])) by (le) > 100
               for: 1m
               labels:
                 severity: warning
@@ -426,7 +431,7 @@ prometheus:
                 summary: "High throughput"
                 description: "High throughput for more than 1 minute"
             - alert: HighErrorRate
-              expr: sum(rate(http_request_duration_seconds_count{job="backend", status=~"5.."}[5m])) by (le) / sum(rate(http_request_duration_seconds_count{job="backend"}[5m])) by (le) > 0.01
+              expr: sum(rate(http_request_duration_count{job="backend", status=~"5.."}[5m])) by (le) / sum(rate(http_request_duration_count{job="backend"}[5m])) by (le) > 0.01
               for: 1m
               labels:
                 severity: warning

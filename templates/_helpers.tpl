@@ -1,6 +1,6 @@
 # Frontend
 {{- define "frontend.deployment.name" -}}
-{{- printf "%s-frontend-deployment" .Release.Name }}
+{{- printf "frontend-deployment" }}
 {{- end }}
 
 {{- define "frontend.deployment.labels" -}}
@@ -13,7 +13,7 @@ app: {{- printf " frontend" -}}
 
 # Backend 
 {{- define "backend.deployment.name" -}}
-{{- printf "%s-backend-deployment" .Release.Name }}
+{{- printf "backend-deployment" }}
 {{- end }}
 
 {{- define "backend.deployment.labels" -}}
@@ -26,7 +26,7 @@ app: {{- printf " backend" -}}
 
 # mongo db
 {{- define "mongo.stateful.name" -}}
-{{- printf "%s-mongodb" .Release.Name }}
+{{- printf "mongodb" }}
 {{- end }}
 
 {{- define "mongo.deployment.selectorLabels" -}}
@@ -83,11 +83,11 @@ app: {{- printf " grafana" -}}
 {{- end }}
 
 {{- define "ingress.annotations" -}}
-kubernetes.io/ingress.class: {{ printf "ingress" }}
+kubernetes.io/ingress.class: {{ printf "nginx" }}
 {{- end }}
 
 {{- define "ingress.rules" -}}
-- host: frontend.gokulmylsami.me
+- host: avesair.gokulmylsami.me
   http:
     paths:
       - path: /
@@ -107,6 +107,16 @@ kubernetes.io/ingress.class: {{ printf "ingress" }}
             name: {{ include "backend.service.name" . }}
             port: 
               number: {{ .Values.backend.service.port }}
+- host: prometheus.gokulmylsami.me
+  http:
+    paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "prometheus.deployment.name" . }}
+            port: 
+              number: {{ .Values.prometheus.service.port }}
 - host: grafana.gokulmylsami.me
   http:
     paths:
@@ -116,17 +126,7 @@ kubernetes.io/ingress.class: {{ printf "ingress" }}
           service:
             name: {{ include "grafana.service.name" . }}
             port: 
-              number: {{ .Values.grafana.service.port}}
-- host: prometheus.gokulmylsami.me
-  http:
-    paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: prometheus-service
-            port: 
-              number: 9090
+              number: {{ .Values.grafana.service.port }}
 
 {{- end }}
 
