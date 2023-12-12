@@ -127,6 +127,17 @@ kubernetes.io/ingress.class: {{ printf "nginx" }}
             name: {{ include "grafana.service.name" . }}
             port: 
               number: {{ .Values.grafana.service.port }}
+- host: argocd.gokulmylsami.me
+  http: 
+    paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            namespace: argocd
+            port: 
+              number: 80
 
 {{- end }}
 
