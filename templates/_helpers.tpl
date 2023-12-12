@@ -200,7 +200,7 @@ app: {{ printf "prometheus" }}
 {{- end}}
 
 {{- define "argocd.ingress.name" -}}
-{{- printf "argocd-ingress" -}}
+{{ printf "argocd-ingress" }}
 {{- end}}
 
 {{- define "argocd.ingress.annotations" -}}

@@ -3,8 +3,8 @@ kind: Ingress
 metadata:
     name: {{ include "argocd.ingress.name" . }}
     namespace: {{ .Values.argocd.namespace  }}
-  annotations:
-    {{- include "argocd.ingress.annotations" . | nindent 4 }}
+    annotations:
+        {{- include "argocd.ingress.annotations" . | nindent 8 }}
 spec:
   rules:
     {{- include "argocd.ingress.rules" . | nindent 4 }}
