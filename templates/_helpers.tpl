@@ -199,24 +199,3 @@ app: {{ printf "prometheus" }}
 {{ printf "application-secrets"}}
 {{- end}}
 
-{{- define "argocd.ingress.name" -}}
-{{ printf "argocd-ingress" }}
-{{- end}}
-
-{{- define "argocd.ingress.annotations" -}}
-kubernetes.io/ingress.class: {{ printf "nginx" }}
-{{- end }}
-
-{{- define "argocd.ingress.rules" -}}
-- host: argocd.gokulmylsami.me
-  http: 
-    paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: argocd-server
-            namespace: argocd
-            port: 
-              number: 443
-{{- end }}
