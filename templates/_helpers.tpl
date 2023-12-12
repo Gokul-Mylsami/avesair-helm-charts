@@ -137,7 +137,7 @@ kubernetes.io/ingress.class: {{ printf "nginx" }}
             name: argocd-server
             namespace: argocd
             port: 
-              number: 80
+              number: 443
 
 {{- end }}
 
