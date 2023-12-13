@@ -1,0 +1,13 @@
+name: imageUpdater
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: "The tag of the image to build"
+        required: true
+jobs:
+  frontendBuild:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Print
+          run: echo "Hello ${{ github.event.inputs.image-tag }}"
