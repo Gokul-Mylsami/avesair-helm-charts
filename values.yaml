@@ -7,8 +7,8 @@ frontend:
   replicaCount: 3
   containerName: frontend
   image:
-    repository: gokulmsfag/finaltask-frontend
-    tag: latest
+    repository: 132596830915.dkr.ecr.us-east-1.amazonaws.com/frontend
+    tag: blue
     pullPolicy: Always
   resources:
     requests:

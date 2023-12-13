@@ -12,6 +12,8 @@ spec:
       labels:
         {{- include "frontend.deployment.labels" . | nindent 8 }}
     spec:
+      imagePullSecrets:
+        - name: {{ include "docker.credentials.name" }}
       containers:
         - name: {{ .Values.frontend.containerName}}
           image: {{ .Values.frontend.image.repository}}:{{ .Values.frontend.image.tag}}
