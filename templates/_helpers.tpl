@@ -199,3 +199,6 @@ app: {{ printf "prometheus" }}
 {{ printf "application-secrets"}}
 {{- end}}
 
+{{- define "docker.credentials.name" -}}
+{{ printf "docker-repo"}}
+{{- end}}
