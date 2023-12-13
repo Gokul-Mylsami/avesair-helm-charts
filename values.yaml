@@ -8,7 +8,7 @@ frontend:
   containerName: frontend
   image:
     repository: gokulmsfag/finaltask-frontend
-    tag: red
+    tag: latest
     pullPolicy: Always
   resources:
     requests:
@@ -340,7 +340,7 @@ nodeExporter:
 pdb:
   backend: 
     name: backend-pdb
-    minAvailable: 2
+    minAvailable: 1
   frontend:
     name: frontend-pdb
     minAvailable: 1
