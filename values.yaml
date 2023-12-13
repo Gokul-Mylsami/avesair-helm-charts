@@ -8,7 +8,7 @@ frontend:
   containerName: frontend
   image:
     repository: gokulmsfag/finaltask-frontend
-    tag: latest
+    tag: green
     pullPolicy: Always
   resources:
     requests:
