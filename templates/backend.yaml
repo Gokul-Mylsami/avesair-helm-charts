@@ -17,9 +17,6 @@ spec:
           image: {{ .Values.backend.image.repository}}:{{ .Values.backend.image.tag}}
           imagePullPolicy: {{ .Values.backend.image.pullPolicy}}
           resources:
-            requests:
-              memory: {{ .Values.backend.resources.requests.memory | quote }}
-              cpu: {{ .Values.backend.resources.requests.cpu | quote }}
             limits:
               memory: {{ .Values.backend.resources.limits.memory | quote }}
               cpu: {{ .Values.backend.resources.limits.cpu | quote }}
