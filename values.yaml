@@ -37,7 +37,7 @@ backend:
   replicas: 2
   containerName: backend
   image:
-    repository: gokulmsfag/finaltask-backend
+    repository: 132596830915.dkr.ecr.us-east-1.amazonaws.com/backend
     tag: latest
     pullPolicy: Always
   resources:
