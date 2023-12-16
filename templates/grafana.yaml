@@ -24,6 +24,7 @@ spec:
             {{- toYaml .Values.grafana.ports | nindent 12 }}
           {{- end }}
 
+
 ---
 apiVersion: v1
 kind: Service
@@ -36,3 +37,4 @@ spec:
   ports:
     - port: {{ .Values.grafana.service.port }}
       targetPort: {{ .Values.grafana.service.targetPort }}
+      

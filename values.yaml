@@ -11,9 +11,6 @@ frontend:
     tag: blue
     pullPolicy: Always
   resources:
-    requests:
-      cpu: "200m"
-      memory: "64Mi"
     limits:
       cpu: "200m"
       memory: "128Mi"
@@ -34,7 +31,7 @@ frontend:
 # backend configuration
 
 backend:
-  replicas: 2
+  replicas: 1
   containerName: backend
   image:
     repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/backend
@@ -154,7 +151,18 @@ grafana:
       cpu: 100m
   ports: 
     - containerPort: 3000
-  
+  volumeMounts:
+    - name: grafana-pv
+      mountPath: /var/lib/grafana
+  volume:
+    - name: grafana-pv
+      persistentVolumeClaim:
+        claimName: grafana-pvc
+  storageClass:
+    name: ebs
+    provisioner: kubernetes.io/aws-ebs
+    volumeBindingMode: WaitForFirstConsumer
+
   service: 
     type: ClusterIP
     port: 3000
@@ -176,7 +184,7 @@ hpa:
     name: backend-deployment
 
 mongoJob:
-  activeDeadlineSeconds: 90
+  activeDeadlineSeconds: 30
   completions: 1
   containerName: mongodb-replica-set-config
   image:
@@ -446,9 +454,10 @@ prometheus:
               for: 1m
 
 pv: 
-  efsId1: fs-0a89ad37f27e66156
-  efsId2: fs-091dfc9c3d759eaab
-  efsId3: fs-0906f873ac86db510
+  efsId1: fs-040d9f25ab22d95bc
+  efsId2: fs-03f82ba807cb650f2
+  efsId3: fs-0a2ec7d1e70c58c2d
+  efsId4: fs-01b407f45f956887f
   volumeMode: Filesystem
   capacity: 
     storage: 2Gi
@@ -456,6 +465,24 @@ pv:
     - "ReadWriteMany"
   csi:
     driver: efs.csi.aws.com
+
+  grafana:
+    name: grafana-pv
+    storage: 1Gi
+    volumeMode: Filesystem
+    accessModes:
+      - "ReadWriteOnce"
+    persistentVolumeReclaimPolicy: Retain
+
+pvc:
+  grafana:
+    name: grafana-pvc
+    volumeMode: Filesystem
+    accessModes:
+      - "ReadWriteOnce"
+    resources:
+      requests:
+        storage: 1Gi
 
 secretStore:
   namespace: external-secrets
@@ -475,23 +502,23 @@ externalSecret:
   data: 
     - secretKey: MONGO_URL
       remoteRef:
-        key: my-eks-secret
+        key: my-secret
         property: MONGO_URL
     - secretKey: JWT_SECRET
       remoteRef:
-        key: my-eks-secret
+        key: my-secret
         property: JWT_SECRET
     - secretKey: EMAIL_USERNAME
       remoteRef:
-        key: my-eks-secret
+        key: my-secret
         property: EMAIL_USERNAME
     - secretKey: EMAIL_PASSWORD
       remoteRef:
-        key: my-eks-secret
+        key: my-secret
         property: EMAIL_PASSWORD
     - secretKey: SLACK_URL
       remoteRef:
-        key: my-eks-secret
+        key: my-secret
         property: SLACK_URL
 
 argocd:

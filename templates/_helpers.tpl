@@ -127,16 +127,6 @@ kubernetes.io/ingress.class: {{ printf "nginx" }}
             name: {{ include "grafana.service.name" . }}
             port: 
               number: {{ .Values.grafana.service.port }}
-- host: alertmanager.gokulmylsami.me
-  http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: alertmanager-service
-                port:
-                  number: 9093
 
 {{- end }}
 
@@ -194,6 +184,10 @@ app: {{ printf "prometheus" }}
 
 {{- define "mongo.pv.name3" -}}
 {{ printf "mongo-pv-3" }}
+{{- end}}
+
+{{- define "grafana.pv.name" -}}
+{{ printf "grafana-pv" }}
 {{- end}}
 
 {{- define "secret.store.name" -}}

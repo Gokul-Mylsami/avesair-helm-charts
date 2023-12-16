@@ -4,6 +4,6 @@ metadata:
   name: {{ include "ingress.name" . }}
 
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
     {{- include "ingress.rules" . | nindent 4 }}
