@@ -7,15 +7,15 @@ frontend:
   replicaCount: 1
   containerName: frontend
   image:
-    repository: 132596830915.dkr.ecr.us-east-1.amazonaws.com/frontend
+    repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/frontend
     tag: blue
     pullPolicy: Always
   resources:
     requests:
-      cpu: "300m"
+      cpu: "200m"
       memory: "64Mi"
     limits:
-      cpu: "500m"
+      cpu: "200m"
       memory: "128Mi"
   env:
     - name: BACKEND_API
@@ -37,7 +37,7 @@ backend:
   replicas: 2
   containerName: backend
   image:
-    repository: 132596830915.dkr.ecr.us-east-1.amazonaws.com/backend
+    repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/backend
     tag: latest
     pullPolicy: Always
   resources:
@@ -290,6 +290,9 @@ networkPolicy:
   policyTypeForBackend: 
     - Ingress
 
+ingress:
+  ingressClassName: nginx
+
 nodeExporter:
   namespace: monitoring
   hostNetwork: true
@@ -443,9 +446,9 @@ prometheus:
               for: 1m
 
 pv: 
-  efsId1: fs-0b160979a18957eec
-  efsId2: fs-0fc3deefe7670967a
-  efsId3: fs-06f24b7d93b73a626
+  efsId1: fs-0a89ad37f27e66156
+  efsId2: fs-091dfc9c3d759eaab
+  efsId3: fs-0906f873ac86db510
   volumeMode: Filesystem
   capacity: 
     storage: 2Gi
@@ -472,23 +475,23 @@ externalSecret:
   data: 
     - secretKey: MONGO_URL
       remoteRef:
-        key: eksSecretKeys
+        key: my-eks-secret
         property: MONGO_URL
     - secretKey: JWT_SECRET
       remoteRef:
-        key: eksSecretKeys
+        key: my-eks-secret
         property: JWT_SECRET
     - secretKey: EMAIL_USERNAME
       remoteRef:
-        key: eksSecretKeys
+        key: my-eks-secret
         property: EMAIL_USERNAME
     - secretKey: EMAIL_PASSWORD
       remoteRef:
-        key: eksSecretKeys
+        key: my-eks-secret
         property: EMAIL_PASSWORD
     - secretKey: SLACK_URL
       remoteRef:
-        key: eksSecretKeys
+        key: my-eks-secret
         property: SLACK_URL
 
 argocd:
@@ -497,4 +500,4 @@ argocd:
 dockerCredentials:
   type: Opaque
   data:
-    .dockerconfigjson: ewoJImF1dGhzIjogewoJCSIxMzI1OTY4MzA5MTUuZGtyLmVjci51cy1lYXN0LTEuYW1hem9uYXdzLmNvbSI6IHt9Cgl9LAoJImNyZWRzU3RvcmUiOiAid2luY3JlZC5leGUiCn0=
+    .dockerconfigjson: ewoJImF1dGhzIjogewoJCSIxMzI1OTY4MzA5MTUuZGtyLmVjci51cy1lYXN0LTEuYW1hem9uYXdzLmNvbSI6IHt9LAoJCSIzNjg2MjU0MTUxMDAuZGtyLmVjci51cy1lYXN0LTEuYW1hem9uYXdzLmNvbSI6IHt9Cgl9LAoJImNyZWRzU3RvcmUiOiAid2luY3JlZC5leGUiCn0=
