@@ -8,7 +8,7 @@ frontend:
   containerName: frontend
   image:
     repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/frontend
-    tag: blue
+    tag: green
     pullPolicy: Always
   resources:
     limits:
