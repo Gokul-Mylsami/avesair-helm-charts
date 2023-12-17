@@ -77,7 +77,7 @@ backend:
           name: application-secrets
           key: EMAIL_PASSWORD
     - name: FRONTEND_URL
-      value: frontend.gokulmylsami.me
+      value: avesair.gokulmylsami.me
   port: 
     - containerPort: 8000
   
