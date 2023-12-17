@@ -127,7 +127,6 @@ kubernetes.io/ingress.class: {{ printf "nginx" }}
             name: {{ include "grafana.service.name" . }}
             port: 
               number: {{ .Values.grafana.service.port }}
-
 {{- end }}
 
 {{- define "mongo.job.name" -}}

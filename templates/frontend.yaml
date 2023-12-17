@@ -16,7 +16,7 @@ spec:
         - name: {{ include "docker.credentials.name" . }}
       containers:
         - name: {{ .Values.frontend.containerName}}
-          image: {{ .Values.frontend.image.repository}}:{{ .Values.frontend.image.tag}}
+          image: {{ .Values.frontend.image.repository}}:{{ .Values.frontend.image.frontendTag}}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy}}
           resources:
             limits:
