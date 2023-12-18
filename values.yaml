@@ -35,7 +35,7 @@ backend:
   containerName: backend
   image:
     repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/backend
-    backendTag: ''
+    backendTag: 'Object'
     pullPolicy: Always
   resources:
     limits:
