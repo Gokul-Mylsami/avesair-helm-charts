@@ -78,6 +78,21 @@ backend:
           key: EMAIL_PASSWORD
     - name: FRONTEND_URL
       value: avesair.gokulmylsami.me
+    - name: AWS_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+            key: AWS_ACCESS_KEY
+            name: application-secrets
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+            key: AWS_SECRET_ACCESS_KEY
+            name: application-secrets
+    - name: AWS_REGION
+      valueFrom:
+        secretKeyRef:
+            key: AWS_REGION
+            name: application-secrets
   port: 
     - containerPort: 8000
   
