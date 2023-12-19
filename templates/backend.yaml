@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.backend.containerName}}
-          image: {{ .Values.backend.image.repository}}:{{ .Values.backend.image.backendTag}}
+          image: {{ .Values.backend.image.repository}}:{{ .Values.backend.image.backendTag }}
           imagePullPolicy: {{ .Values.backend.image.pullPolicy}}
           resources:
             limits:
