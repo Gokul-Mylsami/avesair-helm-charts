@@ -8,7 +8,7 @@ frontend:
   containerName: frontend
   image:
     repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/frontend
-    frontendTag: green
+    frontendTag: 
     pullPolicy: Always
   resources:
     limits:
@@ -35,7 +35,7 @@ backend:
   containerName: backend
   image:
     repository: 368625415100.dkr.ecr.us-east-1.amazonaws.com/backend
-    backendTag: '1.0'
+    backendTag: ''
     pullPolicy: Always
   resources:
     limits:
